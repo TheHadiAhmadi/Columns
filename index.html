@@ -4,186 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="columns.css">
     <style>
-        .section {
-            position: relative;
-            display: flex;
-            flex-wrap: wrap;
-            min-height: 100px;
-            border: 1px solid rgb(133, 133, 133);
-        }
-
-        .section .line {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 1px;
-            background-color: #bbbbbb40;
-            opacity: 0;
-        }
-
-        .section.dragging .line {
-            opacity: 1;
-        }
-        .plugin-container {
-            position: relative;
-            box-shadow: 0 0 0 1px rgba(161, 161, 161, 0.459);
-        }  
-        .plugin-container::before {
-            content: '';
-            width: 1px;
-            height: 100%;
-        }
-        .resizer-handle {
-            position: absolute;
-            z-index: 1;
-            top: 0;
-            height: 100%;
-            right: -8px;
-            width: 16px;
-            cursor:col-resize;
-        }
-        .resizer-handle::before {
-            content: '';
-            position:absolute;
-            transition: all 0.3s ease;
-            opacity: 0;
-            display: block;
-            right: 5px;
-            height: 100%;
-            width: 6px;
-            background-color: #ddd;
-            cursor: col-resize;
-        }
-
-        .resizer-handle::after {
-            content: '';
-            position:absolute;
-            transition: all 0.3s ease;
-            opacity: 0;
-            display: block;
-            right: 6px;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            bottom: 50%;
-            height: 40px;
-            width: 2px;
-            background-color: #7a7a7a;
-            cursor: col-resize;
-        }
-        /* .plugin-container:hover .resizer-handle::after,  */
-        .resizer-handle:hover::before, .resizer-handle:hover::after {
-            opacity: 1;
-        }
-
-        [data-cols="1"] {
-            width: calc(100% / 12);
-        }
-        [data-cols="2"] {
-            width: calc(200% / 12);
-        }
-        [data-cols="3"] {
-            width: calc(300% / 12);
-        }
-        [data-cols="4"] {
-            width: calc(400% / 12);
-        }
-        [data-cols="5"] {
-            width: calc(500% / 12);
-        }
-        [data-cols="6"] {
-            width: calc(600% / 12);
-        }
-        [data-cols="7"] {
-            width: calc(700% / 12);
-        }
-        [data-cols="8"] {
-            width: calc(800% / 12);
-        }
-        [data-cols="9"] {
-            width: calc(900% / 12);
-        }
-        [data-cols="10"] {
-            width: calc(1000% / 12);
-        }
-        [data-cols="11"] {
-            width: calc(1100% / 12);
-        }
-        [data-cols="12"] {
-            width: calc(1200% / 12);
-        }
-
+        
     </style>
 </head>
 <body>
-    <div class="section">
-        <div class="plugin-container" data-cols="4">
+    <button onclick="section.destroy()">Destroy</button>
+    <button onclick="section.init()">Init</button>
+    <button onclick="save()">Save</button>
+
+    <button class="plugin-definition" data-id="4">Plugin 4</button>
+    <button class="plugin-definition" data-id="5">Plugin 5</button>
+    <button class="plugin-definition" data-id="6">Plugin 6</button>
+
+    <div class="section" data-name="FirstSection">
+        <div class="plugin-container" data-cols="12" data-cols-md="6" data-cols-lg="4">
             <div class="plugin-content">Plugin 1</div>
         </div>
-        <div class="plugin-container" data-cols="4">
+        <div class="plugin-container" data-cols="12" data-cols-md="6" data-cols-lg="4">
             <div class="plugin-content">Plugin 2</div>
         </div>
-        <div class="plugin-container" data-cols="4">
+        <div class="plugin-container" data-cols="12" data-cols-md="6" data-cols-lg="4">
             <div class="plugin-content">Plugin 3</div>
         </div>
     </div>
 
+    <script src="columns.js"></script>
     <script>
-        function initColumn(el, section) {
-            const oneColWidth = section.clientWidth / 12;
-            console.log(oneColWidth)
-            console.log('initColumn')
-            const resizer = document.createElement('div')
-            resizer.classList.add('resizer-handle')
-            // <div class="resizer-handle"></div>
-            el.appendChild(resizer)
-
-            let dragging = false
-            let x = 0;
-            function onMouseDown(event) {
-                console.log('onMouseDown');
-                x = event.x;
-                dragging = true
-                section.classList.add('dragging')
+        const section = Columns(
+            document.querySelector('.section'), 
+            { 
+                gridLines: false,
+                colClass: 'plugin-container'
             }
-            function onMouseMove(event) {
-                if(dragging) {
-                    resizer.style.right = (x - event.x - 5) + 'px'
+        )
+        section.init()
 
-                    if(event.x -x < -oneColWidth) {
-                        el.dataset.cols = +(el.dataset.cols) - 1
-                        x = x - oneColWidth
-                        // dragging = false
-                    }
-                    if(event.x - x > oneColWidth) {
-                        el.dataset.cols = +(el.dataset.cols) + 1
-                        x = x + oneColWidth
-                        // dragging = false
-                    }
-                }
-            }
-            function onMouseUp(event) {
-                resizer.style.right = '-8px'
-                dragging = false
-
-                section.classList.remove('dragging')
-            }
-            resizer.addEventListener('mousedown', onMouseDown)
-            document.addEventListener('mousemove', onMouseMove)
-            document.addEventListener('mouseup', onMouseUp)
-
-        }
-        document.querySelectorAll('.section').forEach(section => { 
-            const oneColWidth = section.clientWidth / 12;
-            for(let i=0; i<12; i++) {
-                const line = document.createElement('div')
-                line.classList.add('line')
-                line.style.left = (oneColWidth * i) + 'px'
-
-                section.appendChild(line)
-            }
-            section.querySelectorAll('.plugin-container').forEach(el => initColumn(el, section))  
+        document.querySelectorAll('.plugin-definition').forEach(def => { 
+            def.addEventListener('click', () => {
+                section.append({cols: 4, content: `<h1>${def.textContent}</h1>`})
+            })
         })
+       
+        function save() {
+            const sections = {}
+            document.querySelectorAll('.section').forEach((section) => {
+                const s = []
+                section.querySelectorAll('.plugin-container').forEach(plugin => {
+                    s.push(plugin.dataset)
+                })
+                console.log({s}, section.dataset.name)
+                sections[section.dataset.name] = s
+            })
+            
+            alert(JSON.stringify(sections, null, 2))
+        }
     </script>
 </body>
 </html>

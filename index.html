@@ -43,7 +43,7 @@
 
         document.querySelectorAll('.plugin-definition').forEach(def => { 
             def.addEventListener('click', () => {
-                section.append({cols: 4, content: `<h1>${def.textContent}</h1>`})
+                section.append({cols: 12, colsMd: 6, colsLg: 4, content: `<h1>${def.textContent}</h1>`})
             })
         })
        

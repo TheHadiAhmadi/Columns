@@ -104,10 +104,12 @@ function Columns(element, {gridLines = true, colClass = 'col', breakpointMd = 76
 
     }
 
-    function append({cols, content}) {
+    function append({cols, colsMd, colsLg, content}) {
         var column = document.createElement('div')
         column.classList.add(colClass)
         column.dataset.cols = cols
+        column.dataset.colsMd = colsMd
+        column.dataset.colsLg = colsLg
         column.innerHTML = content
 
         element.appendChild(column)
